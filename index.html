@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event Sales Counter</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f0ebe0;
+    --surface: #faf7f2;
+    --surface2: #ede8de;
+    --border: #ddd8cc;
+    --text: #1a1a1a;
+    --muted: #7a7060;
+    --accent: #4a90a4;   /* slate blue — primary action */
+    --mustard: #e3b045;  /* mustard yellow */
+    --teal: #2e8b6e;     /* teal green */
+    --coral: #e8614a;    /* coral red */
+    --green: #2e8b6e;
+    --red: #e8614a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 3px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    gap: 10px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .logo {
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: var(--text);
+    white-space: nowrap;
+    letter-spacing: -0.5px;
+  }
+
+  .event-name-display {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .btn {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    padding: 8px 16px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn:active { transform: scale(0.96); }
+
+  .btn-accent { background: var(--accent); color: #fff; }
+  .btn-accent:hover { background: #3a7a8e; }
+
+  .btn-ghost { background: transparent; color: var(--text); border: 2px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-danger { background: transparent; color: var(--coral); border: 2px solid var(--coral); }
+  .btn-danger:hover { background: var(--coral); color: #fff; }
+
+  .btn-green { background: var(--teal); color: #fff; }
+  .btn-green:hover { background: #236e57; }
+
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 16px;
+  }
+
+  /* Event Setup Panel */
+  .setup-panel {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .setup-panel h2 {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .setup-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  input[type="text"] {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    color: var(--text);
+    border-radius: 50px;
+    padding: 9px 16px;
+    flex: 1;
+    min-width: 0;
+  }
+  input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  input[type="text"]::placeholder { color: var(--muted); font-weight: 400; }
+
+  /* Grand Total Bar */
+  .total-bar {
+    background: var(--accent);
+    color: #fff;
+    border-radius: 16px;
+    padding: 16px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .total-bar-label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+
+  .total-bar-count {
+    font-family: 'Nunito', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  /* Category */
+  .category {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+
+  .category-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border-bottom: 2px solid var(--border);
+    gap: 10px;
+  }
+
+  .category-name {
+    font-size: 1rem;
+    font-weight: 800;
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+  }
+  .category-name:focus { outline: none; color: var(--accent); }
+
+  .category-total {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--surface);
+    background: var(--accent);
+    padding: 4px 12px;
+    border-radius: 50px;
+    white-space: nowrap;
+  }
+
+  .category-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .cat-btn {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .cat-btn:active { transform: scale(0.95); }
+  .cat-btn-add { background: rgba(46,139,110,0.12); color: var(--teal); border: 2px solid rgba(46,139,110,0.3); }
+  .cat-btn-add:hover { background: var(--teal); color: #fff; border-color: var(--teal); }
+  .cat-btn-remove { background: rgba(232,97,74,0.08); color: var(--coral); border: 2px solid rgba(232,97,74,0.25); }
+  .cat-btn-remove:hover { background: var(--coral); color: #fff; border-color: var(--coral); }
+
+  /* Items Grid */
+  .items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .item-card {
+    background: var(--surface);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+  }
+
+  .item-name-input {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    color: var(--text);
+    border-radius: 50px;
+    padding: 6px 10px;
+    width: 100%;
+  }
+  .item-name-input:focus { outline: none; border-color: var(--accent); }
+
+  .counter-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border: 2px solid var(--border);
+    border-radius: 50px;
+    overflow: hidden;
+    background: var(--surface2);
+  }
+
+  .counter-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 1.4rem;
+    font-weight: 900;
+    border: none;
+    cursor: pointer;
+    transition: background 0.1s;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    border-radius: 50px;
+  }
+
+  .counter-btn-minus {
+    background: rgba(232,97,74,0.12);
+    color: var(--coral);
+  }
+  .counter-btn-minus:hover { background: var(--coral); color: #fff; }
+  .counter-btn-minus:active { background: #c94030; color: #fff; }
+
+  .counter-btn-plus {
+    background: rgba(46,139,110,0.12);
+    color: var(--teal);
+  }
+  .counter-btn-plus:hover { background: var(--teal); color: #fff; }
+  .counter-btn-plus:active { background: #236e57; color: #fff; }
+
+  .counter-val {
+    flex: 1;
+    text-align: center;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 900;
+    color: var(--text);
+    background: transparent;
+    border: none;
+    padding: 0;
+    height: 44px;
+    line-height: 44px;
+    cursor: default;
+    user-select: none;
+  }
+
+  .item-delete {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--surface);
+    background: transparent;
+    color: var(--muted);
+    font-size: 0.7rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+  }
+  .item-delete:hover { background: var(--coral); color: #fff; border-color: var(--coral); }
+
+  /* Add Category */
+  .add-category-section {
+    margin-top: 8px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26,20,10,0.6);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .modal h2 {
+    font-size: 1.3rem;
+    font-weight: 900;
+    margin-bottom: 6px;
+  }
+
+  .modal .subtitle {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-bottom: 20px;
+    font-family: 'Nunito Sans', sans-serif;
+  }
+
+  .summary-category {
+    margin-bottom: 16px;
+  }
+
+  .summary-category-name {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .summary-item-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+
+  .summary-item-row:last-child { border-bottom: none; }
+
+  .summary-item-count {
+    font-weight: 800;
+    color: var(--teal);
+  }
+
+  .summary-grand {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 3px solid var(--accent);
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1rem;
+    font-weight: 900;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  /* Empty state */
+  .empty-cat {
+    padding: 20px;
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  /* Floating bar */
+  .float-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-top: 2px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    z-index: 90;
+  }
+
+  /* Pulse animation for counter change */
+  @keyframes pulse-green {
+    0% { background: rgba(46,139,110,0.3); }
+    100% { background: transparent; }
+  }
+  @keyframes pulse-red {
+    0% { background: rgba(232,97,74,0.3); }
+    100% { background: transparent; }
+  }
+  .pulse-up { animation: pulse-green 0.3s ease-out; }
+  .pulse-down { animation: pulse-red 0.3s ease-out; }
+
+  @media (max-width: 480px) {
+    .items-grid { grid-template-columns: 1fr 1fr; }
+    .logo { font-size: 1rem; }
+    .header-actions .btn { padding: 8px 12px; font-size: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo">🏷 TALLY UP!</div>
+    <div class="event-name-display" id="headerEventName">No event set</div>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-ghost" onclick="showSummary()">Summary</button>
+    <button class="btn btn-accent" onclick="saveTemplate()">Save</button>
+    <button class="btn btn-ghost" onclick="loadTemplate()">Load</button>
+  </div>
+</header>
+
+<main>
+  <!-- Event Setup -->
+  <div class="setup-panel">
+    <h2>Event Info</h2>
+    <div class="setup-row">
+      <input type="text" id="eventName" placeholder="Event name (e.g. Lightbox Expo Oct 5)" oninput="updateEventName()">
+    </div>
+  </div>
+
+  <!-- Grand Total -->
+  <div class="total-bar">
+    <div>
+      <div class="total-bar-label">Total Items Sold</div>
+      <div style="font-size:0.75rem;margin-top:2px;opacity:0.7;" id="totalCategories"></div>
+    </div>
+    <div class="total-bar-count" id="grandTotal">0</div>
+  </div>
+
+  <!-- Categories -->
+  <div id="categoriesContainer"></div>
+
+  <!-- Add Category -->
+  <div class="add-category-section">
+    <input type="text" id="newCategoryName" placeholder="New category name…" style="flex:1">
+    <button class="btn btn-green" onclick="addCategory()">+ Add Category</button>
+  </div>
+</main>
+
+<div class="float-bar">
+  <button class="btn btn-ghost" onclick="exportCSV()">⬇ Export CSV</button>
+  <button class="btn btn-danger" onclick="resetAllCounts()">Reset Counts</button>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" style="display:none" onclick="closeModal(event)">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<script>
+// ─── State ───────────────────────────────────────────────────────────────────
+let state = {
+  eventName: '',
+  categories: []
+};
+
+// Default starter data
+const defaultState = {
+  eventName: '',
+  categories: [
+    {
+      id: uid(), name: 'Mystery Bags',
+      items: [
+        { id: uid(), name: 'Regular Mystery Bag', count: 0 },
+        { id: uid(), name: 'XL Mystery Bag', count: 0 },
+        { id: uid(), name: 'Sticker Lucky Pack', count: 0 },
+      ]
+    },
+    {
+      id: uid(), name: 'Sticker Sheets',
+      items: [
+        { id: uid(), name: 'Bob Ross', count: 0 },
+        { id: uid(), name: 'Cat Portraits', count: 0 },
+        { id: uid(), name: 'Dog Portraits', count: 0 },
+        { id: uid(), name: 'Gen 1', count: 0 },
+        { id: uid(), name: 'Gen 2', count: 0 },
+        { id: uid(), name: 'Gen 3', count: 0 },
+        { id: uid(), name: 'Gen 4', count: 0 },
+        { id: uid(), name: 'Gen 5', count: 0 },
+        { id: uid(), name: 'Snow White', count: 0 },
+        { id: uid(), name: 'Toilet', count: 0 },
+        { id: uid(), name: 'Travel', count: 0 },
+      ]
+    },
+    {
+      id: uid(), name: 'Vinyl Stickers',
+      items: [
+        { id: uid(), name: 'Alice', count: 0 },
+        { id: uid(), name: 'Baking', count: 0 },
+        { id: uid(), name: 'Banana', count: 0 },
+        { id: uid(), name: 'Blue Butt', count: 0 },
+        { id: uid(), name: 'Bread', count: 0 },
+        { id: uid(), name: 'Burger', count: 0 },
+        { id: uid(), name: 'Butter', count: 0 },
+        { id: uid(), name: 'Cactus', count: 0 },
+        { id: uid(), name: 'Cherry', count: 0 },
+        { id: uid(), name: 'Coffee', count: 0 },
+        { id: uid(), name: 'Cow Butt', count: 0 },
+        { id: uid(), name: 'Eevelution', count: 0 },
+        { id: uid(), name: 'Egg Chef', count: 0 },
+        { id: uid(), name: 'Flower Nips', count: 0 },
+        { id: uid(), name: 'Garfield', count: 0 },
+        { id: uid(), name: 'Getaway Car', count: 0 },
+        { id: uid(), name: 'Green Onion', count: 0 },
+        { id: uid(), name: 'Hot Trash', count: 0 },
+        { id: uid(), name: 'Lotus', count: 0 },
+        { id: uid(), name: 'Mochi', count: 0 },
+        { id: uid(), name: 'Moo', count: 0 },
+        { id: uid(), name: 'Moon', count: 0 },
+        { id: uid(), name: 'Museum', count: 0 },
+        { id: uid(), name: 'Rainbow', count: 0 },
+        { id: uid(), name: 'Rainbow Besties', count: 0 },
+        { id: uid(), name: 'Stamp BART', count: 0 },
+        { id: uid(), name: 'Stamp Eagle', count: 0 },
+        { id: uid(), name: 'Stamp UFO', count: 0 },
+        { id: uid(), name: 'Taser', count: 0 },
+        { id: uid(), name: 'Toot Toot', count: 0 },
+        { id: uid(), name: 'Vileplume', count: 0 },
+        { id: uid(), name: 'Wine', count: 0 },
+        { id: uid(), name: 'Yummy', count: 0 }
+      ]
+    },    
+    {
+      id: uid(), name: 'Magnets',
+      items: [
+        { id: uid(), name: 'Bread', count: 0 },
+        { id: uid(), name: 'Burger', count: 0 },
+        { id: uid(), name: 'Butter', count: 0 },
+        { id: uid(), name: 'Calico', count: 0 },
+        { id: uid(), name: 'Coffee', count: 0 },
+        { id: uid(), name: 'Corgi', count: 0 },
+        { id: uid(), name: 'Cow', count: 0 },
+        { id: uid(), name: 'Fat Brown Dog', count: 0 },
+        { id: uid(), name: 'Ginger', count: 0 },
+        { id: uid(), name: 'Onion', count: 0 },
+        { id: uid(), name: 'Sushi', count: 0 },
+        { id: uid(), name: 'Tomato', count: 0 },
+        { id: uid(), name: 'Weenie - Blue', count: 0 },
+        { id: uid(), name: 'Weenie - Green', count: 0 },
+        { id: uid(), name: 'White Dog', count: 0 },
+        { id: uid(), name: 'Yummy', count: 0 }
+      ]
+    },
+    {
+      id: uid(), name: 'Notepads',
+      items: [
+        { id: uid(), name: 'Alice in Wonderland', count: 0 },
+        { id: uid(), name: 'Fruit Cats', count: 0 },
+        { id: uid(), name: 'Pooping Dog', count: 0 },
+        { id: uid(), name: 'Snow White', count: 0 }
+      ]
+    },
+    {
+      id: uid(), name: 'Sketchbooks',
+      items: [
+        { id: uid(), name: 'Bread', count: 0 },
+        { id: uid(), name: 'Burger', count: 0 },
+        { id: uid(), name: 'Camp', count: 0 },
+        { id: uid(), name: 'Cat', count: 0 },
+        { id: uid(), name: 'Dog', count: 0 },
+        { id: uid(), name: 'Pokemon', count: 0 }
+      ]
+    },
+    {
+      id: uid(), name: 'Art Prints - $20 Each',
+      items: [
+        { id: uid(), name: 'Cactus', count: 0 },
+        { id: uid(), name: 'Cat Portraits', count: 0 },
+        { id: uid(), name: 'Coffee', count: 0 },
+        { id: uid(), name: 'Cow', count: 0 },
+        { id: uid(), name: 'Dog Portraits', count: 0 },
+        { id: uid(), name: 'Eeveelution', count: 0 },
+        { id: uid(), name: 'Gen 1', count: 0 },
+        { id: uid(), name: 'Gen 2', count: 0 },
+        { id: uid(), name: 'Gen 3', count: 0 },
+        { id: uid(), name: 'I am Stressed', count: 0 },
+        { id: uid(), name: 'Kitchen', count: 0 },
+        { id: uid(), name: 'Museum', count: 0 },
+        { id: uid(), name: 'Snorlax', count: 0 },
+        { id: uid(), name: 'Toilet', count: 0 },
+        { id: uid(), name: 'Wash Your Hands', count: 0 }
+      ]
+    },
+    {
+      id: uid(), name: 'Art Prints - $30 Each',
+      items: [
+        { id: uid(), name: 'Alice', count: 0 },
+        { id: uid(), name: 'Art Class', count: 0 },
+        { id: uid(), name: 'Camping', count: 0 },
+        { id: uid(), name: 'Grocery', count: 0 },
+        { id: uid(), name: 'Kitchen', count: 0 },
+        { id: uid(), name: 'Museum', count: 0 },
+        { id: uid(), name: 'Teapot', count: 0 }
+      ]
+    },
+    {
+      id: uid(), name: 'Ornaments',
+      items: [
+        { id: uid(), name: 'Corgi', count: 0 },
+        { id: uid(), name: 'Black Cat', count: 0 },
+      ]
+    },
+     {
+      id: uid(), name: 'Sticker Flakes',
+      items: [
+        { id: uid(), name: 'Blue', count: 0 },
+        { id: uid(), name: 'Green', count: 0 },
+        { id: uid(), name: 'Pink', count: 0 },
+        { id: uid(), name: 'Red', count: 0 },
+        { id: uid(), name: 'Yellow', count: 0 }
+      ]
+    },   
+    {
+      id: uid(), name: 'Totebags',
+      items: [
+        { id: uid(), name: 'Cat Butts', count: 0 },
+        { id: uid(), name: 'Dog Butts', count: 0 },
+        { id: uid(), name: 'Pooping Dog', count: 0 },
+        { id: uid(), name: 'UFO', count: 0 }
+      ]
+    },
+    {
+      id: uid(), name: 'Clothing',
+      items: [
+        { id: uid(), name: 'Shirts - S', count: 0 },
+        { id: uid(), name: 'Shirts - M', count: 0 },
+        { id: uid(), name: 'Shirts - L', count: 0 },
+        { id: uid(), name: 'Shirts - XL', count: 0 },
+        { id: uid(), name: 'Shirts - 2XL', count: 0 }
+      ]
+    },
+  ]
+};
+
+function uid() {
+  return Math.random().toString(36).slice(2, 9);
+}
+
+// ─── Version Stamp ────────────────────────────────────────────────────────────
+// Bump this number any time you edit defaultState and want a fresh load.
+// Change 1 → 2, save the file, reload — old localStorage is ignored automatically.
+const DATA_VERSION = 3;
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('tally_state');
+  const savedVersion = parseInt(localStorage.getItem('tally_version') || '0', 10);
+
+  if (saved && savedVersion === DATA_VERSION) {
+    try { state = JSON.parse(saved); } catch(e) { state = JSON.parse(JSON.stringify(defaultState)); }
+  } else {
+    // Version mismatch or no data — load fresh defaults
+    state = JSON.parse(JSON.stringify(defaultState));
+    localStorage.setItem('tally_version', DATA_VERSION);
+  }
+  document.getElementById('eventName').value = state.eventName || '';
+  updateEventName();
+  render();
+});
+
+function save() {
+  localStorage.setItem('tally_state', JSON.stringify(state));
+  localStorage.setItem('tally_version', DATA_VERSION);
+}
+
+// ─── Render ───────────────────────────────────────────────────────────────────
+function render() {
+  const container = document.getElementById('categoriesContainer');
+  container.innerHTML = '';
+
+  let grand = 0;
+  state.categories.forEach(cat => {
+    const catTotal = cat.items.reduce((s, i) => s + i.count, 0);
+    grand += catTotal;
+
+    const div = document.createElement('div');
+    div.className = 'category';
+    div.innerHTML = `
+      <div class="category-header">
+        <input class="category-name" type="text" value="${escHtml(cat.name)}"
+          oninput="renameCategory('${cat.id}', this.value)"
+          placeholder="Category name">
+        <span class="category-total">${catTotal} sold</span>
+        <div class="category-actions">
+          <button class="cat-btn cat-btn-add" onclick="addItem('${cat.id}')">+ Item</button>
+          <button class="cat-btn cat-btn-remove" onclick="removeCategory('${cat.id}')">✕ Cat</button>
+        </div>
+      </div>
+      <div class="items-grid" id="items-${cat.id}">
+        ${cat.items.length === 0
+          ? `<div class="empty-cat" style="grid-column:1/-1">No items yet — click "+ Item" to add one</div>`
+          : cat.items.map(item => renderItem(cat.id, item)).join('')}
+      </div>
+    `;
+    container.appendChild(div);
+  });
+
+  document.getElementById('grandTotal').textContent = grand;
+  document.getElementById('totalCategories').textContent =
+    `${state.categories.length} categor${state.categories.length !== 1 ? 'ies' : 'y'}`;
+  save();
+}
+
+function renderItem(catId, item) {
+  return `
+    <div class="item-card" id="card-${item.id}">
+      <button class="item-delete" onclick="removeItem('${catId}','${item.id}')" title="Remove item">✕</button>
+      <input class="item-name-input" type="text" value="${escHtml(item.name)}"
+        placeholder="Item name"
+        oninput="renameItem('${catId}','${item.id}',this.value)">
+      <div class="counter-row">
+        <button class="counter-btn counter-btn-minus"
+          ontouchstart="this._t=setTimeout(()=>fastChange('${catId}','${item.id}',-1),400)"
+          ontouchend="clearTimeout(this._t)"
+          onclick="changeCount('${catId}','${item.id}',-1)">−</button>
+        <div class="counter-val" id="val-${item.id}">${item.count}</div>
+        <button class="counter-btn counter-btn-plus"
+          ontouchstart="this._t=setTimeout(()=>fastChange('${catId}','${item.id}',1),400)"
+          ontouchend="clearTimeout(this._t)"
+          onclick="changeCount('${catId}','${item.id}',1)">+</button>
+      </div>
+    </div>
+  `;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── Mutations ────────────────────────────────────────────────────────────────
+function changeCount(catId, itemId, delta) {
+  const cat = state.categories.find(c => c.id === catId);
+  if (!cat) return;
+  const item = cat.items.find(i => i.id === itemId);
+  if (!item) return;
+  item.count = Math.max(0, item.count + delta);
+
+  // Update just the affected elements for speed
+  const valEl = document.getElementById(`val-${itemId}`);
+  if (valEl) {
+    valEl.textContent = item.count;
+    valEl.className = 'counter-val ' + (delta > 0 ? 'pulse-up' : 'pulse-down');
+    setTimeout(() => valEl.className = 'counter-val', 300);
+  }
+  // Re-render totals
+  updateTotals();
+  save();
+}
+
+let fastInterval = null;
+function fastChange(catId, itemId, delta) {
+  clearInterval(fastInterval);
+  fastInterval = setInterval(() => changeCount(catId, itemId, delta), 80);
+  document.addEventListener('touchend', () => clearInterval(fastInterval), { once: true });
+  document.addEventListener('mouseup', () => clearInterval(fastInterval), { once: true });
+}
+
+function updateTotals() {
+  let grand = 0;
+  state.categories.forEach(cat => {
+    const catTotal = cat.items.reduce((s, i) => s + i.count, 0);
+    grand += catTotal;
+    // update badge
+    const header = document.querySelector(`#items-${cat.id}`)?.previousElementSibling;
+    if (header) {
+      const badge = header.querySelector('.category-total');
+      if (badge) badge.textContent = catTotal + ' sold';
+    }
+  });
+  document.getElementById('grandTotal').textContent = grand;
+}
+
+function renameCategory(catId, val) {
+  const cat = state.categories.find(c => c.id === catId);
+  if (cat) { cat.name = val; save(); }
+}
+
+function renameItem(catId, itemId, val) {
+  const cat = state.categories.find(c => c.id === catId);
+  if (!cat) return;
+  const item = cat.items.find(i => i.id === itemId);
+  if (item) { item.name = val; save(); }
+}
+
+function addCategory() {
+  const input = document.getElementById('newCategoryName');
+  const name = input.value.trim() || 'New Category';
+  state.categories.push({ id: uid(), name, items: [] });
+  input.value = '';
+  render();
+}
+
+function removeCategory(catId) {
+  const cat = state.categories.find(c => c.id === catId);
+  if (!cat) return;
+  if (cat.items.some(i => i.count > 0)) {
+    if (!confirm(`"${cat.name}" has sold items. Remove anyway?`)) return;
+  }
+  state.categories = state.categories.filter(c => c.id !== catId);
+  render();
+}
+
+function addItem(catId) {
+  const cat = state.categories.find(c => c.id === catId);
+  if (!cat) return;
+  cat.items.push({ id: uid(), name: 'New Item', count: 0 });
+  render();
+}
+
+function removeItem(catId, itemId) {
+  const cat = state.categories.find(c => c.id === catId);
+  if (!cat) return;
+  cat.items = cat.items.filter(i => i.id !== itemId);
+  render();
+}
+
+function updateEventName() {
+  state.eventName = document.getElementById('eventName').value;
+  document.getElementById('headerEventName').textContent = state.eventName || 'No event set';
+  save();
+}
+
+function resetAllCounts() {
+  if (!confirm('Reset all item counts to 0? (Your items and categories stay.)')) return;
+  state.categories.forEach(cat => cat.items.forEach(item => item.count = 0));
+  render();
+}
+
+// ─── Save/Load Templates ──────────────────────────────────────────────────────
+function saveTemplate() {
+  const name = prompt('Save as template name:', state.eventName || 'My Template');
+  if (!name) return;
+  const templates = JSON.parse(localStorage.getItem('tally_templates') || '{}');
+  // Save structure only (no counts)
+  const template = JSON.parse(JSON.stringify(state));
+  template.categories.forEach(cat => cat.items.forEach(item => item.count = 0));
+  template.savedAt = new Date().toLocaleString();
+  templates[name] = template;
+  localStorage.setItem('tally_templates', JSON.stringify(templates));
+  alert(`Template "${name}" saved! Load it next event.`);
+}
+
+function loadTemplate() {
+  const templates = JSON.parse(localStorage.getItem('tally_templates') || '{}');
+  const names = Object.keys(templates);
+  if (names.length === 0) { alert('No saved templates yet. Save one first!'); return; }
+
+  const html = `
+    <h2>Load Template</h2>
+    <p class="subtitle">Loading will replace your current items (not counts if mid-event)</p>
+    <div style="display:flex;flex-direction:column;gap:8px;margin:16px 0">
+      ${names.map(n => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+          <div>
+            <div style="font-weight:700">${escHtml(n)}</div>
+            <div style="font-size:0.75rem;color:var(--muted)">${templates[n].savedAt || ''}</div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-accent" onclick="applyTemplate('${escHtml(n)}')">Load</button>
+            <button class="btn btn-danger" onclick="deleteTemplate('${escHtml(n)}')">Del</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+  `;
+  showModal(html);
+}
+
+function applyTemplate(name) {
+  const templates = JSON.parse(localStorage.getItem('tally_templates') || '{}');
+  if (!templates[name]) return;
+  if (!confirm(`Load "${name}"? Current items will be replaced.`)) return;
+  state = JSON.parse(JSON.stringify(templates[name]));
+  state.eventName = '';
+  document.getElementById('eventName').value = '';
+  updateEventName();
+  closeModal();
+  render();
+}
+
+function deleteTemplate(name) {
+  if (!confirm(`Delete template "${name}"?`)) return;
+  const templates = JSON.parse(localStorage.getItem('tally_templates') || '{}');
+  delete templates[name];
+  localStorage.setItem('tally_templates', JSON.stringify(templates));
+  closeModal();
+  loadTemplate();
+}
+
+// ─── Summary Modal ────────────────────────────────────────────────────────────
+function showSummary() {
+  let grand = 0;
+  let catHtml = '';
+  state.categories.forEach(cat => {
+    const catTotal = cat.items.reduce((s, i) => s + i.count, 0);
+    grand += catTotal;
+    const soldItems = cat.items.filter(i => i.count > 0);
+    catHtml += `
+      <div class="summary-category">
+        <div class="summary-category-name">
+          <span>${escHtml(cat.name)}</span>
+          <span>${catTotal} total</span>
+        </div>
+        ${cat.items.length === 0 ? '<div style="color:var(--muted);font-size:0.8rem;font-family:DM Mono,monospace">No items</div>' :
+          cat.items.map(i => `
+            <div class="summary-item-row" style="${i.count === 0 ? 'opacity:0.4' : ''}">
+              <span>${escHtml(i.name)}</span>
+              <span class="summary-item-count">${i.count}</span>
+            </div>
+          `).join('')}
+      </div>
+    `;
+  });
+
+  const html = `
+    <h2>Event Summary</h2>
+    <p class="subtitle">${escHtml(state.eventName) || 'Unnamed event'} · ${new Date().toLocaleDateString()}</p>
+    <div style="margin-bottom:8px">${catHtml}</div>
+    <div class="summary-grand">
+      <span>GRAND TOTAL</span>
+      <span style="color:var(--accent)">${grand}</span>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-accent" onclick="exportCSV()">⬇ Export CSV</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+    </div>
+  `;
+  showModal(html);
+}
+
+// ─── CSV Export ───────────────────────────────────────────────────────────────
+function exportCSV() {
+  let csv = `Event,${state.eventName}\nDate,${new Date().toLocaleDateString()}\n\nCategory,Item,Count\n`;
+  state.categories.forEach(cat => {
+    cat.items.forEach(item => {
+      csv += `"${cat.name}","${item.name}",${item.count}\n`;
+    });
+    const catTotal = cat.items.reduce((s, i) => s + i.count, 0);
+    csv += `"${cat.name} TOTAL",,${catTotal}\n`;
+  });
+  const grand = state.categories.flatMap(c => c.items).reduce((s, i) => s + i.count, 0);
+  csv += `\nGRAND TOTAL,,${grand}\n`;
+
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${(state.eventName || 'event').replace(/\s+/g,'-')}_tally.csv`;
+  a.click();
+}
+
+// ─── Clear All ────────────────────────────────────────────────────────────────
+function confirmClearAll() {
+  if (!confirm('Delete ALL categories and items? This cannot be undone. (Save a template first if needed!)')) return;
+  state.categories = [];
+  render();
+}
+
+// ─── Modal Helpers ────────────────────────────────────────────────────────────
+function showModal(html) {
+  document.getElementById('modalContent').innerHTML = html;
+  document.getElementById('modalOverlay').style.display = 'flex';
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('modalOverlay')) return;
+  document.getElementById('modalOverlay').style.display = 'none';
+}
+
+window.closeModal = function(e) {
+  if (!e || e.target === document.getElementById('modalOverlay')) {
+    document.getElementById('modalOverlay').style.display = 'none';
+  }
+};
+
+window.applyTemplate = applyTemplate;
+window.deleteTemplate = deleteTemplate;
+</script>
+</body>
+</html>
