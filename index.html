@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, nofollow">  
+<meta name="robots" content="noindex, nofollow">
 <title>Event Sales Counter</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -29,7 +29,7 @@
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
-    padding: 0 0 80px;
+    padding: 0 0 160px;
   }
 
   header {
@@ -478,10 +478,111 @@
   .pulse-up { animation: pulse-green 0.3s ease-out; }
   .pulse-down { animation: pulse-red 0.3s ease-out; }
 
+  /* Category Jump Bar */
+  .jump-bar {
+    position: sticky;
+    top: 57px;
+    z-index: 90;
+    background: var(--bg);
+    border-bottom: 2px solid var(--border);
+    padding: 8px 16px;
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .jump-bar::-webkit-scrollbar { display: none; }
+
+  .jump-pill {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 50px;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .jump-pill:hover { border-color: var(--accent); color: var(--accent); }
+  .jump-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* Activity Feed */
+  .activity-bar {
+    position: fixed;
+    bottom: 58px;
+    left: 0;
+    right: 0;
+    z-index: 89;
+    pointer-events: none;
+  }
+
+  .activity-feed {
+    max-width: 420px;
+    margin: 0 auto 0 0;
+    padding: 0 12px 6px;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 4px;
+    pointer-events: none;
+  }
+
+  .activity-entry {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 50px;
+    padding: 5px 12px 5px 8px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    animation: slideIn 0.2s ease-out;
+    width: fit-content;
+    max-width: 100%;
+    opacity: 1;
+    transition: opacity 0.4s;
+  }
+  .activity-entry.fading { opacity: 0.35; }
+
+  .activity-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .activity-dot.plus { background: var(--teal); }
+  .activity-dot.minus { background: var(--coral); }
+
+  .activity-cat {
+    color: var(--muted);
+    font-size: 0.72rem;
+  }
+
+  .activity-time {
+    color: var(--muted);
+    font-size: 0.68rem;
+    margin-left: 2px;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
   @media (max-width: 480px) {
     .items-grid { grid-template-columns: 1fr 1fr; }
     .logo { font-size: 1rem; }
     .header-actions .btn { padding: 8px 12px; font-size: 0.75rem; }
+    .jump-bar { top: 53px; }
   }
 </style>
 </head>
@@ -498,6 +599,14 @@
     <button class="btn btn-ghost" onclick="loadTemplate()">Load</button>
   </div>
 </header>
+
+<!-- Category Jump Bar -->
+<div class="jump-bar" id="jumpBar"></div>
+
+<!-- Activity Feed -->
+<div class="activity-bar">
+  <div class="activity-feed" id="activityFeed"></div>
+</div>
 
 <main>
   <!-- Event Setup -->
@@ -586,14 +695,14 @@ const defaultState = {
         { id: uid(), name: 'Cherry', count: 0 },
         { id: uid(), name: 'Coffee', count: 0 },
         { id: uid(), name: 'Cow Butt', count: 0 },
-        { id: uid(), name: 'Eevelution', count: 0 },
+        { id: uid(), name: 'Eevee', count: 0 },
+        { id: uid(), name: 'Eeveelution', count: 0 },
         { id: uid(), name: 'Egg Chef', count: 0 },
         { id: uid(), name: 'Flower Nips', count: 0 },
         { id: uid(), name: 'Garfield', count: 0 },
         { id: uid(), name: 'Getaway Car', count: 0 },
         { id: uid(), name: 'Green Onion', count: 0 },
         { id: uid(), name: 'Hot Trash', count: 0 },
-        { id: uid(), name: 'Lotus', count: 0 },
         { id: uid(), name: 'Mochi', count: 0 },
         { id: uid(), name: 'Moo', count: 0 },
         { id: uid(), name: 'Moon', count: 0 },
@@ -629,6 +738,13 @@ const defaultState = {
         { id: uid(), name: 'Weenie - Green', count: 0 },
         { id: uid(), name: 'White Dog', count: 0 },
         { id: uid(), name: 'Yummy', count: 0 }
+      ]
+    },
+    {
+      id: uid(), name: 'Ornaments',
+      items: [
+        { id: uid(), name: 'Corgi', count: 0 },
+        { id: uid(), name: 'Black Cat', count: 0 },
       ]
     },
     {
@@ -684,13 +800,6 @@ const defaultState = {
       ]
     },
     {
-      id: uid(), name: 'Ornaments',
-      items: [
-        { id: uid(), name: 'Corgi', count: 0 },
-        { id: uid(), name: 'Black Cat', count: 0 },
-      ]
-    },
-     {
       id: uid(), name: 'Sticker Flakes',
       items: [
         { id: uid(), name: 'Blue', count: 0 },
@@ -729,7 +838,7 @@ function uid() {
 // ─── Version Stamp ────────────────────────────────────────────────────────────
 // Bump this number any time you edit defaultState and want a fresh load.
 // Change 1 → 2, save the file, reload — old localStorage is ignored automatically.
-const DATA_VERSION = 3;
+const DATA_VERSION = 4;
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 window.addEventListener('load', () => {
@@ -765,6 +874,7 @@ function render() {
 
     const div = document.createElement('div');
     div.className = 'category';
+    div.id = `cat-anchor-${cat.id}`;
     div.innerHTML = `
       <div class="category-header">
         <input class="category-name" type="text" value="${escHtml(cat.name)}"
@@ -788,6 +898,7 @@ function render() {
   document.getElementById('grandTotal').textContent = grand;
   document.getElementById('totalCategories').textContent =
     `${state.categories.length} categor${state.categories.length !== 1 ? 'ies' : 'y'}`;
+  buildJumpBar();
   save();
 }
 
@@ -817,6 +928,58 @@ function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ─── Jump Bar ─────────────────────────────────────────────────────────────────
+function buildJumpBar() {
+  const bar = document.getElementById('jumpBar');
+  bar.innerHTML = '';
+  state.categories.forEach(cat => {
+    const pill = document.createElement('button');
+    pill.className = 'jump-pill';
+    pill.textContent = cat.name;
+    pill.onclick = () => {
+      const el = document.getElementById(`cat-anchor-${cat.id}`);
+      if (!el) return;
+      // Offset for sticky header + jump bar height
+      const offset = 120;
+      const top = el.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: 'smooth' });
+      // Highlight active pill briefly
+      document.querySelectorAll('.jump-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      setTimeout(() => pill.classList.remove('active'), 1200);
+    };
+    bar.appendChild(pill);
+  });
+}
+
+// ─── Activity Feed ────────────────────────────────────────────────────────────
+const activityLog = [];
+const MAX_ACTIVITY = 3;
+
+function logActivity(catName, itemName, delta) {
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  activityLog.unshift({ catName, itemName, delta, time });
+  if (activityLog.length > MAX_ACTIVITY) activityLog.pop();
+  renderActivity();
+}
+
+function renderActivity() {
+  const feed = document.getElementById('activityFeed');
+  feed.innerHTML = '';
+  activityLog.forEach((entry, i) => {
+    const el = document.createElement('div');
+    el.className = 'activity-entry' + (i >= 1 ? ' fading' : '');
+    el.innerHTML = `
+      <span class="activity-dot ${entry.delta > 0 ? 'plus' : 'minus'}"></span>
+      <span>${entry.delta > 0 ? '+1' : '−1'} <strong>${escHtml(entry.itemName)}</strong></span>
+      <span class="activity-cat">${escHtml(entry.catName)}</span>
+      <span class="activity-time">${entry.time}</span>
+    `;
+    feed.appendChild(el);
+  });
+}
+
 // ─── Mutations ────────────────────────────────────────────────────────────────
 function changeCount(catId, itemId, delta) {
   const cat = state.categories.find(c => c.id === catId);
@@ -824,6 +987,8 @@ function changeCount(catId, itemId, delta) {
   const item = cat.items.find(i => i.id === itemId);
   if (!item) return;
   item.count = Math.max(0, item.count + delta);
+  const actualDelta = delta > 0 ? 1 : (item.count >= 0 ? delta : 0);
+  logActivity(cat.name, item.name, delta);
 
   // Update just the affected elements for speed
   const valEl = document.getElementById(`val-${itemId}`);
