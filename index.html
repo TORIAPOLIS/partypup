@@ -191,7 +191,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 12px 16px;
-    background: var(--surface2);
+    background: var(--surface);
     border-bottom: 2px solid var(--border);
     gap: 10px;
   }
@@ -277,7 +277,7 @@
     border: 2px solid var(--border);
     border-radius: 50px;
     overflow: hidden;
-    background: var(--surface2);
+    background: var(--surface);
   }
 
   .counter-btn {
@@ -318,7 +318,7 @@
     font-size: 1.35rem;
     font-weight: 900;
     color: var(--text);
-    background: transparent;
+    background: var(--surface);
     border: none;
     padding: 0;
     height: 44px;
@@ -669,14 +669,25 @@ const defaultState = {
       id: uid(), name: 'Sticker Sheets',
       items: [
         { id: uid(), name: 'Bob Ross', count: 0 },
+        { id: uid(), name: 'Bread', count: 0 },
         { id: uid(), name: 'Cat Portraits', count: 0 },
+        { id: uid(), name: 'Coffee', count: 0 },
         { id: uid(), name: 'Dog Portraits', count: 0 },
+        { id: uid(), name: 'Fruit Cats', count: 0 },
         { id: uid(), name: 'Gen 1', count: 0 },
         { id: uid(), name: 'Gen 2', count: 0 },
         { id: uid(), name: 'Gen 3', count: 0 },
         { id: uid(), name: 'Gen 4', count: 0 },
         { id: uid(), name: 'Gen 5', count: 0 },
+        { id: uid(), name: 'Gen 6', count: 0 },
+        { id: uid(), name: 'Lucky Charm', count: 0 },
+        { id: uid(), name: 'Panty in Wonderland', count: 0 },
+        { id: uid(), name: 'Post Office', count: 0 },
         { id: uid(), name: 'Snow White', count: 0 },
+        { id: uid(), name: 'Stamp - Bay Area', count: 0 },
+        { id: uid(), name: 'Stamp - Japan', count: 0 },
+        { id: uid(), name: 'Stamp - New York', count: 0 },
+        { id: uid(), name: 'Stamp - Yeehaw', count: 0 },
         { id: uid(), name: 'Toilet', count: 0 },
         { id: uid(), name: 'Travel', count: 0 },
       ]
@@ -693,11 +704,15 @@ const defaultState = {
         { id: uid(), name: 'Butter', count: 0 },
         { id: uid(), name: 'Cactus', count: 0 },
         { id: uid(), name: 'Cherry', count: 0 },
+        { id: uid(), name: 'Chun Li', count: 0 },
         { id: uid(), name: 'Coffee', count: 0 },
         { id: uid(), name: 'Cow Butt', count: 0 },
+        { id: uid(), name: 'Cow Hills', count: 0 },
+        { id: uid(), name: 'Dont Talk 2 My Son', count: 0 },
         { id: uid(), name: 'Eevee', count: 0 },
         { id: uid(), name: 'Eeveelution', count: 0 },
         { id: uid(), name: 'Egg Chef', count: 0 },
+        { id: uid(), name: 'Espeon', count: 0 },
         { id: uid(), name: 'Flower Nips', count: 0 },
         { id: uid(), name: 'Garfield', count: 0 },
         { id: uid(), name: 'Getaway Car', count: 0 },
@@ -712,8 +727,10 @@ const defaultState = {
         { id: uid(), name: 'Stamp BART', count: 0 },
         { id: uid(), name: 'Stamp Eagle', count: 0 },
         { id: uid(), name: 'Stamp UFO', count: 0 },
+        { id: uid(), name: 'Sylveon', count: 0 },
         { id: uid(), name: 'Taser', count: 0 },
         { id: uid(), name: 'Toot Toot', count: 0 },
+        { id: uid(), name: 'Umbreon', count: 0 },
         { id: uid(), name: 'Vileplume', count: 0 },
         { id: uid(), name: 'Wine', count: 0 },
         { id: uid(), name: 'Yummy', count: 0 }
@@ -743,8 +760,10 @@ const defaultState = {
     {
       id: uid(), name: 'Ornaments',
       items: [
+        { id: uid(), name: 'Calico', count: 0 },
         { id: uid(), name: 'Corgi', count: 0 },
         { id: uid(), name: 'Black Cat', count: 0 },
+        { id: uid(), name: 'Tuxedo', count: 0 },
       ]
     },
     {
@@ -838,7 +857,7 @@ function uid() {
 // ─── Version Stamp ────────────────────────────────────────────────────────────
 // Bump this number any time you edit defaultState and want a fresh load.
 // Change 1 → 2, save the file, reload — old localStorage is ignored automatically.
-const DATA_VERSION = 4;
+const DATA_VERSION = 5;
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 window.addEventListener('load', () => {
